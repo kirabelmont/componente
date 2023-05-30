@@ -1,12 +1,16 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 
 @Component({
   selector: 'app-popup',
-  templateUrl: './popup.component.html',
-  styleUrls: ['./popup.component.css']
+  template: `
+  <h1>Pop-up</h1>
+  <button (click)="abrirPopUp()">abrir pop-up</button>
+`
+
 })
 export class PopupComponent {
-
+  // Al cerrar el pop de todas maneras el navegador le preguntara si quiere cerrar la ventana
+  
   @HostListener('window:beforeunload', ['$event'])
   beforeUnloadHandler(event: BeforeUnloadEvent) {
     // Cancela el evento de cierre
@@ -15,8 +19,26 @@ export class PopupComponent {
     event.returnValue = '¿Estás seguro de que deseas abandonar esta página?';
   }
   
-  cerrarVentana(){
-    window.close();
+  private popUpWindow: Window | null = null;
+
+  constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
+  // abre un pop up que avisa al usuario que esta cerrando sin terminar el flujo del trabajo
+  abrirPopUp() {
+    //medidas del pop up
+    this.popUpWindow = window.open('', '_blank', 'width=500,height=200');
+    //contenido del pop up
+    const contenidoPopup = '<h1>Aún no finalizas completamente el flujo de enrolamiento, ¿Deseas salir?</h1><button id="cerrarPopup">Cerrar pestaña</button>';
+
+    if (this.popUpWindow) {
+      const popupDocument = this.popUpWindow.document;
+      popupDocument.write(contenidoPopup);
+      popupDocument.close();
+      const cerrarPopupButton = popupDocument.getElementById('cerrarPopup');
+      this.renderer.listen(cerrarPopupButton, 'click', () => {
+        this.popUpWindow!.close();
+        window.close();
+      });
+    }
   }
 
 }
