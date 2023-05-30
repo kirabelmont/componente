@@ -3,8 +3,8 @@ import { Component, HostListener, ViewChild, ElementRef, Renderer2 } from '@angu
 @Component({
   selector: 'app-popup',
   template: `
-  <h1>Pop-up</h1>
-  <button (click)="abrirPopUp()">abrir pop-up</button>
+  <h1>Muestras de cierra de ventana</h1>
+  <button (click)="abrirPopUp()">Cerrar ventana</button>
 `
 
 })
@@ -33,6 +33,7 @@ export class PopupComponent {
       const popupDocument = this.popUpWindow.document;
       popupDocument.write(contenidoPopup);
       popupDocument.close();
+// cierra el pop up
       const cerrarPopupButton = popupDocument.getElementById('cerrarPopup');
       this.renderer.listen(cerrarPopupButton, 'click', () => {
         this.popUpWindow!.close();
